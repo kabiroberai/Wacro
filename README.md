@@ -53,7 +53,7 @@ An ideal runner might be a hybrid of these two. On macOS, moving the WebKit runn
 
 ## Try it Out
 
-See the [WacroExamples](https://github.com/kabiroberai/WacroExamples) repo. You can either clone it and run `ExampleClient`, or use `ExampleLibrary` as a dependency in any project! Note that there might be some unexpected performance pitfalls right now, but these will be remedied if this makes its way into the Swift compiler. See the following section for details:
+See the [WacroExample](https://github.com/kabiroberai/WacroExample) repo. You can either clone it and run `ExampleClient`, or use `ExampleLibrary` as a dependency in any project! Note that there might be some unexpected performance pitfalls right now, but these will be remedied if this makes its way into the Swift compiler. See the following section for details:
 
 ## Performance
 
@@ -64,7 +64,7 @@ See the [WacroExamples](https://github.com/kabiroberai/WacroExamples) repo. You 
 - These tests were performed on a 16 inch M3 Max MacBook Pro with 48 GB of unified memory, running macOS 14.1
 - Clean builds started with a `make clean`. The wasm binary itself was kept around, since we're looking at performance for clients rather than macro authors.
 - WasmKit/WebKit builds were then performed with `time make client [RELEASE=1] [WK=1]`.
-- SwiftSyntax builds were performed by modifying `WacroExamples/Package.swift` to directly link `ExampleClient` to `ExampleRaw`.
+- SwiftSyntax builds were performed by modifying `WacroExample/Package.swift` to directly link `ExampleClient` to `ExampleRaw`.
 
 ### Results
 
