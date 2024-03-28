@@ -81,7 +81,7 @@ Since compiling the host follows standard procedure, you can build and run with 
 
 - These tests were performed on a 16 inch M3 Max MacBook Pro with 48 GB of unified memory, running macOS 14.1
 - Clean builds started with a `make clean`. The wasm binary itself was kept around, since we're looking at performance for clients rather than macro authors.
-- WasmKit/WebKit builds were then performed with `time make [RELEASE=1] [WK=1]`.
+- WasmKit/WebKit builds were then performed with `time make client [RELEASE=1] [WK=1]`.
 - SwiftSyntax builds were performed by modifying `Example/Package.swift` to directly link `ExampleClient` to `ExampleRaw`.
 
 ### Results
