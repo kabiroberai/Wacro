@@ -1,8 +1,8 @@
+#if compiler(>=6.0) && os(WASI)
+
 import Foundation
 
 var onRequest: ((Data) -> Data)? = nil
-
-#if compiler(>=6.0) && os(WASI)
 
 @_expose(wasm, "wacro_malloc")
 @_cdecl("wacro_malloc")

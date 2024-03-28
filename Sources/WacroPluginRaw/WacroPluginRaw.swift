@@ -2,6 +2,8 @@
 // https://github.com/apple/swift-syntax/blob/cfd0487a9c70bd91935d7ea13ad4410cc4569cf1/Sources/SwiftCompilerPlugin/CompilerPlugin.swift
 // but wasm compatible
 
+#if compiler(>=6.0) && os(WASI)
+
 #if swift(>=6.0)
 public import SwiftSyntaxMacros
 private import Foundation
@@ -73,3 +75,5 @@ class PluginHostConnection: MessageConnection {
         return try decoder.decode(RX.self, from: incoming)
     }
 }
+
+#endif
