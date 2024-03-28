@@ -14,24 +14,21 @@ import WebKit
             return (data, response)
         }, forURLScheme: "wasm-runner-data")
         webView = WKWebView(frame: .zero, configuration: configuration)
-        #if DEBUG
-        if #available(macOS 13.3, *) {
-            webView.isInspectable = true
-        }
-        #endif
 
         _ = try await webView.callAsyncJavaScript(
             """
             const mod = await WebAssembly.compileStreaming(fetch("wasm-runner-data://"));
+            // stub WASI imports
             const imports = WebAssembly.Module.imports(mod)
                 .filter(x => x.module === "wasi_snapshot_preview1")
-                .map(x => [x.name, () => {}])
-            wasm = await WebAssembly.instantiate(mod, {
+                .map(x => [x.name, () => {}]);
+            const instance = await WebAssembly.instantiate(mod, {
                 wasi_snapshot_preview1: Object.fromEntries(imports)
             });
+            api = instance.exports;
             enc = new TextEncoder();
             dec = new TextDecoder();
-            wasm.exports._start();
+            api._start();
             """,
             contentWorld: .defaultClient
         )
@@ -47,31 +44,31 @@ import WebKit
     func handle(_ json: String) async throws -> String {
         let utf8Length = json.utf8.count
         return try await webView.callAsyncJavaScript("""
-        const inAddr = wasm.exports.macro_malloc(\(utf8Length));
-        const mem = wasm.exports.memory;
+        const inAddr = api.macro_malloc(\(utf8Length));
+        const mem = api.memory;
         const arr = new Uint8Array(mem.buffer, inAddr, \(utf8Length));
         enc.encodeInto(json, arr);
-        const outAddr = wasm.exports.macro_parse(inAddr, \(utf8Length));
+        const outAddr = api.macro_parse(inAddr, \(utf8Length));
         const len = new Uint32Array(mem.buffer, outAddr)[0];
         const outArr = new Uint8Array(mem.buffer, outAddr + 4, len);
         const text = dec.decode(outArr);
-        wasm.exports.macro_free(outAddr);
+        api.macro_free(outAddr);
         return text;
         """, arguments: ["json": json], contentWorld: .defaultClient) as! String
     }
 }
 
 private final class SchemeHandler<Chunks: AsyncSequence>: NSObject, WKURLSchemeHandler where Chunks.Element == Data {
-    public typealias RequestHandler<Output> = (URLRequest) async throws -> (Output, URLResponse)
+    typealias RequestHandler<Output> = (URLRequest) async throws -> (Output, URLResponse)
 
     private var tasks: [ObjectIdentifier: Task<Void, Never>] = [:]
     private let onRequest: RequestHandler<Chunks>
 
-    public init(onRequest: @escaping RequestHandler<Chunks>) {
+    init(onRequest: @escaping RequestHandler<Chunks>) {
         self.onRequest = onRequest
     }
 
-    public func webView(_ webView: WKWebView, start task: any WKURLSchemeTask) {
+    func webView(_ webView: WKWebView, start task: any WKURLSchemeTask) {
         tasks[ObjectIdentifier(task)] = Task {
             var err: Error?
             do {
@@ -94,7 +91,7 @@ private final class SchemeHandler<Chunks: AsyncSequence>: NSObject, WKURLSchemeH
         }
     }
 
-    public func webView(_ webView: WKWebView, stop urlSchemeTask: any WKURLSchemeTask) {
+    func webView(_ webView: WKWebView, stop urlSchemeTask: any WKURLSchemeTask) {
         tasks.removeValue(forKey: ObjectIdentifier(urlSchemeTask))?.cancel()
     }
 }
