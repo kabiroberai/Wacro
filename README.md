@@ -53,25 +53,7 @@ An ideal runner might be a hybrid of these two. On macOS, moving the WebKit runn
 
 ## Try it Out
 
-The `Example/` folder contains a fully functional Wacro-based macro. I chose not to check in the wasm source, which means you'll need to build both the wasm and the client:
-
-### Building the raw macro
-
-1. Install a WASM-compatible toolchain from [swift.org/download](https://www.swift.org/download/). A recent `main` snapshot should definitely work, and the 6.0 snapshots might also work (untested).
-2. Install a WASI SDK: see <https://book.swiftwasm.org/getting-started/setup.html#experimental-swift-sdk>
-3. `cd Example/` in a checkout of this repo and run `make wasm`. 
-
-You should see the file `/Example/ExampleRaw.wasm.dylib` after running these steps. This is a bona-fide WebAssembly module; the `dylib` extension is merely to pacify the macOS sandbox. 
-
-### Building the host
-
-(You can switch back to a production toolchain for this)
-
-1. Change into the `Example/` directory again.
-2. Run `make client`. If you're on macOS and want to use the WebKit runner (faster), use `make client WK=1`.
-3. That's all! You can now run the produced executable at `.build/debug/ExampleClient`.
-
-Since compiling the host follows standard procedure, you can build and run with Xcode as well. Just open `Example/Package.swift` in Xcode and build `ExampleClient`.
+See the [WacroExamples](https://github.com/kabiroberai/WacroExamples) repo. You can either clone it and run `ExampleClient`, or use `ExampleLibrary` as a dependency in any project! Note that there might be some unexpected performance pitfalls right now, but these will be remedied if this makes its way into the Swift compiler. See the following section for details:
 
 ## Performance
 
