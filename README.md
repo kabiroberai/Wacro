@@ -30,11 +30,26 @@ When the host macro is invoked, `WacroPluginHost` spins up a WebAssembly "runner
 
 ## WebAssembly Compilation
 
-With Swift 6.0, support for WASM and WASI have now been [upstreamed](https://forums.swift.org/t/stdlib-and-runtime-tests-for-wasm-wasi-now-available-on-swift-ci/70385). This means that a vanilla Swift 6.0 toolchain can build WASI binaries out of the box given a WASI SDK. 
+With Swift 6.0, support for WASM and WASI has now been [upstreamed](https://forums.swift.org/t/stdlib-and-runtime-tests-for-wasm-wasi-now-available-on-swift-ci/70385). This means that a vanilla Swift 6.0 toolchain can build WASI binaries out of the box given a WASI SDK. 
 
 ## WebAssembly Runners
 
-TODO
+Wacro currently offers two approaches for executing your WebAssembly binary:
+
+1. **WebKit**: This approach relies on `WKWebView`'s WebAssembly support to evaluate macros Just-in-Time.
+  - Con: only works on macOS
+  - Con: requires `--disable-sandbox` when building hosts since WKWebView uses XPC.
+  - Pro: pretty performant (see the Performance section).
+  - Pro: requires no additional dependencies, as we use the WebKit library shipped with macOS.
+2. **WasmKit**: This approach uses the third-party [WasmKit](https://github.com/swiftwasm/WasmKit) library to interpret WebAssembly macros.
+  - Con: the code is interpreted rather than just-in-time compiled, so this approach has a greater constant overhead than using WebKit.
+  - Con: adds WasmKit as a dependency to your library, along with its transitive dependencies. These are only used at compile time but add some overhead in the form of fetching and compiling additional modules. This overhead is far less than that of swift-syntax though.
+  - Pro: should work on any platform supported by SwiftPM.
+  - Pro: does not require disabling the sandbox, or passing any other flags.
+
+WasmKit is currently the default runner, since it is cross-platform and can run sandboxed. Instructions for switching to WebKit are in the following section.
+
+An ideal runner might be a hybrid of these two. On macOS, moving the WebKit runner into the Swift Driver would allow it to be used without disabling the macro sandbox. Meanwhile, WasmKit could be used on other platforms where WebKit is not vended by the system.
 
 ## Try it Out
 
@@ -62,4 +77,20 @@ Since compiling the host follows standard procedure, you can build and run with 
 
 **Note**: this section is about _build time_ performance. Runtime performance will be identical to a typical macro. The WebAssembly execution process is build-time-only.
 
-TODO
+### Methodology
+
+- These tests were performed on a 16 inch M3 Max MacBook Pro with 48 GB of unified memory, running macOS 14.1
+- Clean builds started with a `make clean`. The wasm binary itself was kept around, since we're looking at performance for clients rather than macro authors.
+- WasmKit/WebKit builds were then performed with `time make [RELEASE=1] [WK=1]`.
+- SwiftSyntax builds were performed by modifying `Example/Package.swift` to directly link `ExampleClient` to `ExampleRaw`.
+
+### Results
+
+| Kind                  | WasmKit | WebKit | SwiftSyntax |
+|-----------------------|---------|--------|-------------|
+| Clean (debug)         | 33.8    | 19.2   | 29.0        |
+| Clean (release)       | 32.0    | 18.4   | 183.2       |
+| Incremental (debug)   | 9.8     | 1.3    | 0.6         |
+| Incremental (release) | 1.1     | 1.5    | 0.8         |
+
+> No, you're not reading that wrong. WasmKit-based macros build _faster_ in release mode because WasmKit itself is compiled with optimizations and can thus interpret wasm macros faster. Ideally, deeper integration with SwiftPM would ensure that WasmKit itself is always built in release mode.
