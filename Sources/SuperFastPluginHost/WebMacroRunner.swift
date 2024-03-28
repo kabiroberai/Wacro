@@ -48,12 +48,12 @@ import WebKit
         let utf8Length = json.utf8.count
         return try await webView.callAsyncJavaScript("""
         const inAddr = wasm.exports.macro_malloc(\(utf8Length));
-        const mem = wasm.exports.memory.buffer;
-        const arr = new Uint8Array(mem, inAddr, \(utf8Length));
+        const mem = wasm.exports.memory;
+        const arr = new Uint8Array(mem.buffer, inAddr, \(utf8Length));
         enc.encodeInto(json, arr);
         const outAddr = wasm.exports.macro_parse(inAddr, \(utf8Length));
-        const len = new Uint32Array(mem, outAddr)[0];
-        const outArr = new Uint8Array(mem, outAddr + 4, len);
+        const len = new Uint32Array(mem.buffer, outAddr)[0];
+        const outArr = new Uint8Array(mem.buffer, outAddr + 4, len);
         const text = dec.decode(outArr);
         wasm.exports.macro_free(outAddr);
         return text;
@@ -66,9 +66,6 @@ private final class SchemeHandler<Chunks: AsyncSequence>: NSObject, WKURLSchemeH
 
     private var tasks: [ObjectIdentifier: Task<Void, Never>] = [:]
     private let onRequest: RequestHandler<Chunks>
-
-    // 16 KB
-    public static var defaultChunkSize: Int { 16 << 10 }
 
     public init(onRequest: @escaping RequestHandler<Chunks>) {
         self.onRequest = onRequest
