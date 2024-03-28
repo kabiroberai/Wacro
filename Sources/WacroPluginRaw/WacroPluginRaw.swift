@@ -40,7 +40,7 @@ extension WacroPluginRaw {
         // entrypoint merely defines onRequest so that it can accept a single request
         // and return a single response by invoking the WacroPluginRaw implementor.
         //
-        // we then export macro_parse which the host can call to invoke onRequest.
+        // we then export wacro_parse which the host can call to invoke onRequest.
 
         let connection = PluginHostConnection()
         let provider = MacroProviderAdapter(plugin: Self())

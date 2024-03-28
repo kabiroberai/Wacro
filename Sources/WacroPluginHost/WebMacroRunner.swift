@@ -44,15 +44,15 @@ import WebKit
     func handle(_ json: String) async throws -> String {
         let utf8Length = json.utf8.count
         return try await webView.callAsyncJavaScript("""
-        const inAddr = api.macro_malloc(\(utf8Length));
+        const inAddr = api.wacro_malloc(\(utf8Length));
         const mem = api.memory;
         const arr = new Uint8Array(mem.buffer, inAddr, \(utf8Length));
         enc.encodeInto(json, arr);
-        const outAddr = api.macro_parse(inAddr, \(utf8Length));
+        const outAddr = api.wacro_parse(inAddr, \(utf8Length));
         const len = new Uint32Array(mem.buffer, outAddr)[0];
         const outArr = new Uint8Array(mem.buffer, outAddr + 4, len);
         const text = dec.decode(outArr);
-        api.macro_free(outAddr);
+        api.wacro_free(outAddr);
         return text;
         """, arguments: ["json": json], contentWorld: .defaultClient) as! String
     }

@@ -20,9 +20,9 @@ final class WasmKitMacroRunner: MacroRunner {
     func handle(_ json: String) throws -> String {
         let exports = instance.exports
         guard case let .memory(memoryAddr) = exports["memory"] else { fatalError("bad memory") }
-        guard case let .function(malloc) = exports["macro_malloc"] else { fatalError("bad macro_malloc") }
-        guard case let .function(parse) = exports["macro_parse"] else { fatalError("bad macro_parse") }
-        guard case let .function(free) = exports["macro_free"] else { fatalError("bad macro_free") }
+        guard case let .function(malloc) = exports["wacro_malloc"] else { fatalError("bad wacro_malloc") }
+        guard case let .function(parse) = exports["wacro_parse"] else { fatalError("bad wacro_parse") }
+        guard case let .function(free) = exports["wacro_free"] else { fatalError("bad wacro_free") }
 
         let inAddr = try malloc.invoke([.i32(UInt32(json.utf8.count))], runtime: runtime)[0].i32
 

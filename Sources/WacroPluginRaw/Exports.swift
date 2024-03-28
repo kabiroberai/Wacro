@@ -2,14 +2,14 @@ import Foundation
 
 var onRequest: ((Data) -> Data)? = nil
 
-@_expose(wasm, "macro_malloc")
-@_cdecl("macro_malloc")
+@_expose(wasm, "wacro_malloc")
+@_cdecl("wacro_malloc")
 public func macroMalloc(_ size: UInt32) -> UnsafeMutablePointer<UInt8> {
     UnsafeMutablePointer<UInt8>.allocate(capacity: Int(size))
 }
 
-@_expose(wasm, "macro_free")
-@_cdecl("macro_free")
+@_expose(wasm, "wacro_free")
+@_cdecl("wacro_free")
 public func macroFree(_ pointer: UnsafeMutablePointer<UInt8>?) {
     pointer?.deallocate()
 }
@@ -17,8 +17,8 @@ public func macroFree(_ pointer: UnsafeMutablePointer<UInt8>?) {
 // transfers ownership of message to callee.
 // returned pointer is pascal-style string with a 32-bit length prefix.
 // caller must free returned pointer.
-@_expose(wasm, "macro_parse")
-@_cdecl("macro_parse")
+@_expose(wasm, "wacro_parse")
+@_cdecl("wacro_parse")
 public func macroParse(_ message: UnsafeMutablePointer<UInt8>?, _ size: UInt32) -> UnsafeMutablePointer<UInt8>? {
     let input = Data(bytesNoCopy: message!, count: Int(size), deallocator: .custom { p, _ in p.deallocate() })
     let output = if let onRequest { onRequest(input) } else { fatalError("onRequest == nil") }
