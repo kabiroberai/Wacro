@@ -6,6 +6,8 @@ wasm::
 	# https://github.com/apple/swift/blob/418dd95d8e324666e6ad4ecc13de7344ccc12fed/lib/Basic/Sandbox.cpp#L28
 	cp -a Example/.build/wasm32-unknown-wasi/release/ExampleRaw.wasm Example/ExampleRaw.wasm.dylib
 
+# note that WebMacroRunner uses WKWebView which can't run in the macro sandbox
+# and therefore requires --disable-sandbox
 client::
 	swift build --package-path Example --product ExampleClient
 
