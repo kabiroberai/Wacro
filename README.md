@@ -4,7 +4,7 @@ Wacro (**W**ebAssembly M**acro**s) is a proof-of-concept implementation of the _
 
 As of today, Wacro already allows library authors to build macros in WebAssembly and users to consume them like any other Swift library: see the `Example/` folder for details. However there are currently some performance pitfalls — which can be fixed, albeit requiring implementation within the compiler/SwiftPM itself.
 
-**Wacro is not** a GSoC submission: it merely exists to show that this is possible (without even modifying the compiler or SwiftPM!) but a real-world implementation _should_ probably be integrated into the compiler and SwiftPM to improve usability and performance.
+**Wacro is not** a GSoC submission: it merely exists to show that this is possible (without even modifying the compiler or SwiftPM!) since the GSoC proposal hasn't seen much movement. A real-world implementation should probably be integrated into the compiler and SwiftPM to improve usability and performance.
 
 ## Why?
 
@@ -85,6 +85,8 @@ Since compiling the host follows standard procedure, you can build and run with 
 - SwiftSyntax builds were performed by modifying `Example/Package.swift` to directly link `ExampleClient` to `ExampleRaw`.
 
 ### Results
+
+All values are in seconds.
 
 | Kind                  | WasmKit | WebKit | SwiftSyntax |
 |-----------------------|---------|--------|-------------|
