@@ -1,3 +1,6 @@
+// based on PluginHostConnection from
+// https://github.com/apple/swift-syntax/blob/cfd0487a9c70bd91935d7ea13ad4410cc4569cf1/Sources/SwiftCompilerPlugin/CompilerPlugin.swift
+
 import Foundation
 
 internal struct PluginHostConnection {
