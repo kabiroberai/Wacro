@@ -1,5 +1,4 @@
 // swift-tools-version: 5.10
-// The swift-tools-version declares the minimum version of Swift required to build this package.
 
 import PackageDescription
 import CompilerPluginSupport
@@ -20,7 +19,7 @@ let package = Package(
         ),
     ],
     dependencies: [
-        .package(name: "SuperFast", path: "..")
+        .package(name: "Wacro", path: "..")
     ],
     targets: [
         .executableTarget(
@@ -32,13 +31,13 @@ let package = Package(
         .executableTarget(
             name: "ExampleRaw",
             dependencies: [
-                .product(name: "SuperFastPluginRaw", package: "SuperFast"),
+                .product(name: "WacroPluginRaw", package: "Wacro"),
             ]
         ),
         .macro(
             name: "ExampleHost",
             dependencies: [
-                .product(name: "SuperFastPluginHost", package: "SuperFast"),
+                .product(name: "WacroPluginHost", package: "Wacro"),
             ]
         ),
     ]

@@ -1,9 +1,9 @@
 import XCTest
-@testable import SuperFastPluginHost
+@testable import WacroPluginHost
 import Foundation
 import SwiftCompilerPluginMessageHandling
 
-final class SuperFastHostTests: XCTestCase {
+final class WacroHostTests: XCTestCase {
     func testWebRunner() async throws {
         let rootPath = URL(filePath: #filePath)
             .deletingLastPathComponent()

@@ -1,7 +1,7 @@
-import SuperFastPluginHost
+import WacroPluginHost
 import Foundation
 
-@main struct Host: SuperFastPluginHost {
+@main struct Host: WacroPluginHost {
     var providingLibrary: URL {
         URL(fileURLWithPath: #filePath).deletingLastPathComponent().appendingPathComponent("../../ExampleRaw.wasm.dylib")
     }

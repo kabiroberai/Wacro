@@ -1,7 +1,7 @@
 import SwiftSyntax
 import SwiftSyntaxBuilder
 import SwiftSyntaxMacros
-import SuperFastPluginRaw
+import WacroPluginRaw
 
 public enum StringifyMacro: ExpressionMacro {
   public static func expansion(
@@ -16,7 +16,7 @@ public enum StringifyMacro: ExpressionMacro {
   }
 }
 
-@main struct ExampleMacros: SuperFastPluginRaw {
+@main struct ExampleMacros: WacroPluginRaw {
     var providingMacros: [any Macro.Type] {
         [
             StringifyMacro.self

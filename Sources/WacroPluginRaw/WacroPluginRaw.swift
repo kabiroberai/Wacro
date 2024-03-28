@@ -22,13 +22,13 @@ import Foundation
 import SwiftCompilerPluginMessageHandling
 #endif
 
-public protocol SuperFastPluginRaw {
+public protocol WacroPluginRaw {
     init()
 
     var providingMacros: [Macro.Type] { get }
 }
 
-extension SuperFastPluginRaw {
+extension WacroPluginRaw {
   func resolveMacro(moduleName: String, typeName: String) -> Macro.Type? {
     let qualifedName = "\(typeName)"
 
@@ -49,7 +49,7 @@ extension SuperFastPluginRaw {
   }
 }
 
-struct MacroProviderAdapter<Plugin: SuperFastPluginRaw>: PluginProvider {
+struct MacroProviderAdapter<Plugin: WacroPluginRaw>: PluginProvider {
   let plugin: Plugin
   init(plugin: Plugin) {
     self.plugin = plugin
@@ -59,7 +59,7 @@ struct MacroProviderAdapter<Plugin: SuperFastPluginRaw>: PluginProvider {
   }
 }
 
-extension SuperFastPluginRaw {
+extension WacroPluginRaw {
 
   /// Main entry point of the plugin — sets up a communication channel with
   /// the plugin host and runs the main message loop.

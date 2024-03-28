@@ -1,3 +1,5 @@
+#if !WEBKIT_RUNNER
+
 import WasmKit
 import WASI
 import System
@@ -46,3 +48,5 @@ final class WasmKitMacroRunner: MacroRunner {
         return str
     }
 }
+
+#endif

@@ -6,16 +6,23 @@ protocol MacroRunner {
     func handle(_ json: String) async throws -> String
 }
 
-public protocol SuperFastPluginHost {
+public protocol WacroPluginHost {
     init()
 
     var providingLibrary: URL { get }
 }
 
-extension SuperFastPluginHost {
+extension WacroPluginHost {
     public static func main() async throws {
+        let runnerType: MacroRunner.Type
+        #if WEBKIT_RUNNER
+        runnerType = WebMacroRunner.self
+        #else
+        runnerType = WasmKitMacroRunner.self
+        #endif
+
         let library = Self().providingLibrary
-        let runner = try await WasmKitMacroRunner(wasm: Data(contentsOf: library))
+        let runner = try await runnerType.init(wasm: Data(contentsOf: library))
 
         let connection = PluginHostConnection(inputStream: .standardInput, outputStream: .standardOutput)
         while let message = try connection.waitForNextMessage() {
