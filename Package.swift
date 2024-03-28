@@ -47,7 +47,6 @@ let package = Package(
             name: "WacroPluginHostTests",
             dependencies: [
                 "WacroPluginHost",
-                .product(name: "SwiftCompilerPluginMessageHandling", package: "swift-syntax"),
             ]
         ),
     ]

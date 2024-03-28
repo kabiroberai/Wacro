@@ -9,12 +9,14 @@
 // See http://swift.org/CONTRIBUTORS.txt for the list of Swift project authors
 //
 //===----------------------------------------------------------------------===//
-// NOTE: This basic plugin mechanism is mostly copied from
-// https://github.com/apple/swift-package-manager/blob/main/Sources/PackagePlugin/Plugin.swift
+
+// loosely based on
+// https://github.com/apple/swift-syntax/blob/cfd0487a9c70bd91935d7ea13ad4410cc4569cf1/Sources/SwiftCompilerPlugin/CompilerPlugin.swift
+// but wasm compatible
 
 import SwiftSyntaxMacros
 
-#if swift(>=5.11)
+#if swift(>=6.0)
 private import Foundation
 private import SwiftCompilerPluginMessageHandling
 #else
@@ -30,13 +32,13 @@ public protocol WacroPluginRaw {
 
 extension WacroPluginRaw {
   func resolveMacro(moduleName: String, typeName: String) -> Macro.Type? {
-    let qualifedName = "\(typeName)"
-
+    // NB: we ignore moduleName because it will refer to the host module name
+    // whereas the macro's fully qualified name has the "raw" wasm module name
     for type in providingMacros {
       // FIXME: Is `String(reflecting:)` stable?
       // Getting the module name and type name should be more robust.
       let name = String(reflecting: type)
-      if name.split(separator: ".").dropFirst().joined(separator: ".") == qualifedName {
+      if name.split(separator: ".").dropFirst().joined(separator: ".") == typeName {
         return type
       }
     }
@@ -61,18 +63,23 @@ struct MacroProviderAdapter<Plugin: WacroPluginRaw>: PluginProvider {
 
 extension WacroPluginRaw {
 
-  /// Main entry point of the plugin — sets up a communication channel with
-  /// the plugin host and runs the main message loop.
+  /// Main entry point of the plugin
   public static func main() throws {
-    // Open a message channel for communicating with the plugin host.
-    let connection = PluginHostConnection()
+    // this behaves a bit differently from the bona fide CompilerPlugin.main.
+    // we don't use a loop/stdio (to avoid relying on WASI), instead our
+    // entrypoint merely defines onRequest so that it can accept a single request
+    // and return a single response by invoking the WacroPluginRaw implementor.
+    //
+    // we then export macro_parse which the host can call to invoke onRequest.
 
-    // Handle messages from the host until the input stream is closed,
-    // indicating that we're done.
+    let connection = PluginHostConnection()
     let provider = MacroProviderAdapter(plugin: Self())
     let impl = CompilerPluginMessageHandler(connection: connection, provider: provider)
     onRequest = { input in
         connection.incoming = input
+        // this will receive `input` from our connection class, write the output to
+        // `connection.outgoing`, and then determine that there are no more messages
+        // and end the "loop".
         try! impl.main()
         return connection.outgoing
     }
@@ -109,9 +116,9 @@ public func macroFree(_ pointer: UnsafeMutablePointer<UInt8>?) {
   pointer?.deallocate()
 }
 
-// transfers ownership of message to callee
-// returned pointer is pascal-style string
-// caller must free returned pointer
+// transfers ownership of message to callee.
+// returned pointer is pascal-style string with a 32-bit length prefix.
+// caller must free returned pointer.
 @_expose(wasm, "macro_parse")
 @_cdecl("macro_parse")
 public func macroParse(_ message: UnsafeMutablePointer<UInt8>?, _ size: UInt32) -> UnsafeMutablePointer<UInt8> {

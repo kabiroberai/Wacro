@@ -8,7 +8,7 @@ wasm::
 
 # WebMacroRunner uses WKWebView which can't run in the macro sandbox
 client::
-	$(if $(WK),WEBKIT_RUNNER=1 )swift build --product ExampleClient $(if $(WK),--disable-sandbox) $(SWIFTFLAGS)
+	$(if $(WK),WEBKIT_RUNNER=1) swift build --product ExampleClient $(if $(WK),--disable-sandbox) $(SWIFTFLAGS)
 
 run:: client
 	.build/debug/ExampleClient

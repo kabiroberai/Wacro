@@ -9,7 +9,7 @@ final class WasmKitMacroRunner: MacroRunner {
     let instance: ModuleInstance
     let runtime: Runtime
 
-    init(wasm: Data) async throws {
+    init(wasm: Data) throws {
         let module = try parseWasm(bytes: Array(wasm))
         let bridge = try WASIBridgeToHost()
         runtime = Runtime(hostModules: bridge.hostModules)
@@ -17,10 +17,9 @@ final class WasmKitMacroRunner: MacroRunner {
         _ = try bridge.start(instance, runtime: runtime)
     }
 
-    func handle(_ json: String) async throws -> String {
+    func handle(_ json: String) throws -> String {
         let exports = instance.exports
-        guard case let .memory(memoryAddr) = instance.exports["memory"] else { fatalError("bad memory") }
-
+        guard case let .memory(memoryAddr) = exports["memory"] else { fatalError("bad memory") }
         guard case let .function(malloc) = exports["macro_malloc"] else { fatalError("bad macro_malloc") }
         guard case let .function(parse) = exports["macro_parse"] else { fatalError("bad macro_parse") }
         guard case let .function(free) = exports["macro_free"] else { fatalError("bad macro_free") }
