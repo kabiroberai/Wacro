@@ -13,4 +13,4 @@ run:: client
 	Example/.build/debug/ExampleClient
 
 clean::
-	rm -rf Example/.build Example/Sources/ExampleHost/ExampleRaw.wasm.dylib
+	rm -rf Example/.build Example/ExampleRaw.wasm.dylib

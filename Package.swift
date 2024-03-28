@@ -20,7 +20,7 @@ let package = Package(
     ],
     dependencies: [
         .package(url: "https://github.com/apple/swift-syntax.git", "509.0.0"..<"999.0.0"),
-        .package(url: "https://github.com/swiftwasm/WasmKit.git", from: "0.0.3"),
+        .package(url: "https://github.com/kabiroberai/WasmKit.git", branch: "slim"),
     ],
     targets: [
         .target(
