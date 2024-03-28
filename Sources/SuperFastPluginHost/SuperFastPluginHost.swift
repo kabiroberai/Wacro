@@ -1,5 +1,11 @@
 import Foundation
 
+protocol MacroRunner {
+    init(wasm: Data) async throws
+
+    func handle(_ json: String) async throws -> String
+}
+
 public protocol SuperFastPluginHost {
     init()
 
@@ -9,7 +15,7 @@ public protocol SuperFastPluginHost {
 extension SuperFastPluginHost {
     public static func main() async throws {
         let library = Self().providingLibrary
-        let runner = try await WebMacroRunner(wasm: Data(contentsOf: library))
+        let runner = try await WasmKitMacroRunner(wasm: Data(contentsOf: library))
 
         let connection = PluginHostConnection(inputStream: .standardInput, outputStream: .standardOutput)
         while let message = try connection.waitForNextMessage() {

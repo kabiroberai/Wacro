@@ -1,9 +1,8 @@
 import SuperFastPluginHost
-import ExampleHostContainer
 import Foundation
 
 @main struct Host: SuperFastPluginHost {
     var providingLibrary: URL {
-        exampleURL
+        URL(fileURLWithPath: #filePath).deletingLastPathComponent().appendingPathComponent("../../ExampleRaw.wasm.dylib")
     }
 }

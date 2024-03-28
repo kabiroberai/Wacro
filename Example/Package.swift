@@ -35,17 +35,10 @@ let package = Package(
                 .product(name: "SuperFastPluginRaw", package: "SuperFast"),
             ]
         ),
-        .target(
-            name: "ExampleHostContainer",
-            resources: [
-                .copy("ExampleRaw.wasm")
-            ]
-        ),
         .macro(
             name: "ExampleHost",
             dependencies: [
                 .product(name: "SuperFastPluginHost", package: "SuperFast"),
-                "ExampleHostContainer",
             ]
         ),
     ]

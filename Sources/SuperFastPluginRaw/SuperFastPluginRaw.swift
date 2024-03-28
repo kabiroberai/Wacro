@@ -30,13 +30,13 @@ public protocol SuperFastPluginRaw {
 
 extension SuperFastPluginRaw {
   func resolveMacro(moduleName: String, typeName: String) -> Macro.Type? {
-    let qualifedName = ".\(typeName)"
+    let qualifedName = "\(typeName)"
 
     for type in providingMacros {
       // FIXME: Is `String(reflecting:)` stable?
       // Getting the module name and type name should be more robust.
       let name = String(reflecting: type)
-      if name.hasSuffix(qualifedName) {
+      if name.split(separator: ".").dropFirst().joined(separator: ".") == qualifedName {
         return type
       }
     }

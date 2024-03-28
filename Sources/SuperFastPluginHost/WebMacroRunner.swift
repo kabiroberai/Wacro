@@ -1,12 +1,6 @@
 import Foundation
 import WebKit
 
-protocol MacroRunner {
-    init(wasm: Data) async throws
-
-    func handle(_ json: String) async throws -> String
-}
-
 @MainActor final class WebMacroRunner: MacroRunner {
     private let webView: WKWebView
 
