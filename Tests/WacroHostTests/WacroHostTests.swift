@@ -19,11 +19,11 @@ final class WacroHostTests: XCTestCase {
 enum TestConstants {
     static let input = #"{"getCapability":{"capability":{"protocolVersion":1}}}"#
 
+    // assumption: WacroExample is a sibling to the root Wacro dir.
     static let wasm: Data = {
         let path = URL(filePath: #filePath)
             .deletingLastPathComponent()
-            .appending(components: "..", "..")
-            .appending(components: "Example", "ExampleRaw.wasm.dylib")
+            .appending(path: "../../../WacroExample/ExampleRaw.wasm.dylib")
         return try! Data(contentsOf: path)
     }()
 }
