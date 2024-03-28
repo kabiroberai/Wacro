@@ -2,6 +2,8 @@ import Foundation
 
 var onRequest: ((Data) -> Data)? = nil
 
+#if os(WASI)
+
 @_expose(wasm, "wacro_malloc")
 @_cdecl("wacro_malloc")
 public func macroMalloc(_ size: UInt32) -> UnsafeMutablePointer<UInt8> {
@@ -32,3 +34,5 @@ public func macroParse(_ message: UnsafeMutablePointer<UInt8>?, _ size: UInt32) 
 
     return outPointer.baseAddress
 }
+
+#endif
