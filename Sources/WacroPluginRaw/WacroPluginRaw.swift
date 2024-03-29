@@ -4,15 +4,9 @@
 
 #if compiler(>=6.0) && os(WASI)
 
-#if swift(>=6.0)
 public import SwiftSyntaxMacros
-private import Foundation
-private import SwiftCompilerPluginMessageHandling
-#else
-import SwiftSyntaxMacros
 import Foundation
-import SwiftCompilerPluginMessageHandling
-#endif
+private import SwiftCompilerPluginMessageHandling
 
 public protocol WacroPluginRaw {
     init()
@@ -23,6 +17,8 @@ public protocol WacroPluginRaw {
 struct MacroProviderAdapter<Plugin: WacroPluginRaw>: PluginProvider {
     let types: [String: Macro.Type]
     init(plugin: Plugin) {
+        // NB: we ignore moduleName because it will refer to the host module name
+        // whereas the macro's fully qualified name has the "raw" wasm module name
         types = Dictionary(plugin.providingMacros.map { type in
             let fullName = String(reflecting: type)
             let typeName = fullName.split(separator: ".").dropFirst().joined(separator: ".")
