@@ -1,7 +1,7 @@
 import Foundation
 import WebKit
 
-@MainActor final class WebMacroRunner: MacroRunner {
+@MainActor package final class WebMacroRunner: MacroRunner {
     private let webView: WKWebView
 
     private init<Chunks: AsyncSequence>(_ data: Chunks) async throws where Chunks.Element == Data {
@@ -34,14 +34,14 @@ import WebKit
         )
     }
 
-    convenience init(wasm: Data) async throws {
+    package convenience init(wasm: Data) async throws {
         try await self.init(AsyncStream {
             $0.yield(wasm)
             $0.finish()
         })
     }
 
-    func handle(_ json: String) async throws -> String {
+    package func handle(_ json: String) async throws -> String {
         let utf8Length = json.utf8.count
         return try await webView.callAsyncJavaScript("""
         const inAddr = api.wacro_malloc(\(utf8Length));

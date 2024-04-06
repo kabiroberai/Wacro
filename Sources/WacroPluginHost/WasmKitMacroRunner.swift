@@ -5,11 +5,11 @@ import WASI
 import System
 import Foundation
 
-final class WasmKitMacroRunner: MacroRunner {
+package final class WasmKitMacroRunner: MacroRunner {
     let instance: ModuleInstance
     let runtime: Runtime
 
-    init(wasm: Data) throws {
+    package init(wasm: Data) throws {
         let module = try parseWasm(bytes: Array(wasm))
         let bridge = try WASIBridgeToHost()
         runtime = Runtime(hostModules: bridge.hostModules)
@@ -17,7 +17,7 @@ final class WasmKitMacroRunner: MacroRunner {
         _ = try bridge.start(instance, runtime: runtime)
     }
 
-    func handle(_ json: String) throws -> String {
+    package func handle(_ json: String) throws -> String {
         let exports = instance.exports
         guard case let .memory(memoryAddr) = exports["memory"] else { fatalError("bad memory") }
         guard case let .function(malloc) = exports["wacro_malloc"] else { fatalError("bad wacro_malloc") }

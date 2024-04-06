@@ -1,33 +1,35 @@
 import XCTest
-@testable import WacroPluginHost
-import Foundation
+import WacroPluginHost
+import WacroTestSupport
 
-final class WacroHostPerformanceTests: XCTestCase {
-    func testWasmKitPerformance1() throws {
+final class WacroPerformanceTests: XCTestCase {
+    func testWasmKitPerformanceCold() throws {
         measurePerformance(of: WasmKitMacroRunner.self, iterations: 1)
         measure {
             measurePerformance(of: WasmKitMacroRunner.self, iterations: 1)
         }
     }
 
-    func testWasmKitPerformance5() throws {
+    func testWasmKitPerformanceHot() throws {
         measurePerformance(of: WasmKitMacroRunner.self, iterations: 1)
         measure {
-            measurePerformance(of: WasmKitMacroRunner.self, iterations: 5)
+            // baseline: 25.4 ms per handle()
+            measurePerformance(of: WasmKitMacroRunner.self, iterations: 100)
         }
     }
 
-    func testWebKitPerformance1() throws {
+    func testWebKitPerformanceCold() throws {
         measurePerformance(of: WebMacroRunner.self, iterations: 1)
         measure {
             measurePerformance(of: WebMacroRunner.self, iterations: 1)
         }
     }
 
-    func testWebKitPerformance5() throws {
+    func testWebKitPerformanceHot() throws {
         measurePerformance(of: WebMacroRunner.self, iterations: 1)
         measure {
-            measurePerformance(of: WebMacroRunner.self, iterations: 5)
+            // baseline: 1.05 ms per handle()
+            measurePerformance(of: WebMacroRunner.self, iterations: 1000)
         }
     }
 

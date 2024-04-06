@@ -1,6 +1,6 @@
 import XCTest
+import WacroTestSupport
 @testable import WacroPluginHost
-import Foundation
 
 final class WacroHostTests: XCTestCase {
     func testWebRunner() async throws {
@@ -14,16 +14,4 @@ final class WacroHostTests: XCTestCase {
         let output = try runner.handle(TestConstants.input)
         XCTAssert(output.hasPrefix("{"), "Expected output to be a JSON object. Got: \(output)")
     }
-}
-
-enum TestConstants {
-    static let input = #"{"getCapability":{"capability":{"protocolVersion":1}}}"#
-
-    // assumption: WacroExample is a sibling to the root Wacro dir.
-    static let wasm: Data = {
-        let path = URL(filePath: #filePath)
-            .deletingLastPathComponent()
-            .appending(path: "../../../WacroExample/ExampleRaw.wasm.dylib")
-        return try! Data(contentsOf: path)
-    }()
 }

@@ -44,11 +44,23 @@ let package = Package(
                 .define("WEBKIT_RUNNER")
             ] : []
         ),
-        .testTarget(
-            name: "WacroPluginHostTests",
+        .target(
+            name: "WacroTestSupport",
             dependencies: [
                 "WacroPluginHost",
             ]
         ),
+        .testTarget(
+            name: "WacroPluginHostTests",
+            dependencies: [
+                "WacroTestSupport",
+            ]
+        ),
+        .testTarget(
+            name: "WacroPerformanceTests",
+            dependencies: [
+                "WacroTestSupport",
+            ]
+        )
     ]
 )

@@ -1,6 +1,6 @@
 import Foundation
 
-protocol MacroRunner {
+package protocol MacroRunner {
     init(wasm: Data) async throws
 
     func handle(_ json: String) async throws -> String
