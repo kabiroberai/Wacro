@@ -17,7 +17,10 @@ import WebKit
 
         _ = try await webView.callAsyncJavaScript(
             """
-            const mod = await WebAssembly.compileStreaming(fetch("wasm-runner-data://"));
+            // somehow compile(await fetch.arrayBuf) is faster than
+            // compileStreaming(fetch). Beats me.
+            const data = await (await fetch("wasm-runner-data://")).arrayBuffer();
+            const mod = await WebAssembly.compile(data);
             // stub WASI imports
             const imports = WebAssembly.Module.imports(mod)
                 .filter(x => x.module === "wasi_snapshot_preview1")
