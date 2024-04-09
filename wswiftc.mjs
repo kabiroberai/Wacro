@@ -14,7 +14,10 @@ const wacroTmp = `${tmp}/wacro`;
 
 async function prepareForwarder() {
     // a swift compiler plugin that forwards requests to us
-    // via fds so that we can talk to swiftc
+    // via fds so that we can talk to swiftc. The plugin decides
+    // which fds to use based on the file name, so that we can
+    // have multiple links to the plugin each refer to a different
+    // wasm instance.
     const forwarder = `
 #include <stdio.h>
 #include <stdlib.h>
