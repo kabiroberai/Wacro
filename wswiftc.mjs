@@ -23,6 +23,7 @@ async function prepareForwarder() {
 #include <stdlib.h>
 #include <assert.h>
 #include <libgen.h>
+#include <stdint.h>
 
 int main(int argc, char **argv) {
     int index = atoi(basename(argv[0])) - 1;
@@ -38,7 +39,7 @@ int main(int argc, char **argv) {
             FILE *out = i ? stdout : adhoc_input;
             uint64_t len;
             if (fread(&len, sizeof(len), 1, in) != 1) return 0;
-            if (buf_size < len) { assert(buf = realloc(buf, len)); buf_size = len; }
+            if (buf_size < len) { assert(buf = (char*)realloc(buf, len)); buf_size = len; }
             assert(fread(buf, len, 1, in) == 1);
             assert(fwrite(&len, sizeof(len), 1, out) == 1);
             assert(fwrite(buf, len, 1, out) == 1);
