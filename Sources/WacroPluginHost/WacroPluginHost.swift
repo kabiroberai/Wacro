@@ -1,7 +1,7 @@
 import Foundation
 
 package protocol MacroRunner {
-    init(wasm: Data) async throws
+    init(data: Data) async throws
 
     func handle(_ json: String) async throws -> String
 }
@@ -22,7 +22,7 @@ extension WacroPluginHost {
         #endif
 
         let library = Self().providingLibrary
-        let runner = try await runnerType.init(wasm: Data(contentsOf: library))
+        let runner = try await runnerType.init(data: Data(contentsOf: library))
 
         let connection = PluginHostConnection(inputStream: .standardInput, outputStream: .standardOutput)
         while let message = try connection.waitForNextMessage() {

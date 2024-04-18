@@ -10,7 +10,8 @@ let webkitMode = ProcessInfo.processInfo.environment["WEBKIT_RUNNER"] == "1"
 let package = Package(
     name: "Wacro",
     platforms: [
-        .macOS("12.0")
+        .macOS("12.0"),
+        .iOS("15.0"),
     ],
     products: [
         .library(
@@ -25,20 +26,23 @@ let package = Package(
     dependencies: (rawMode ? [
         .package(url: "https://github.com/apple/swift-syntax.git", "509.0.0"..<"999.0.0"),
     ] : []) + (webkitMode ? [] : [
-        .package(url: "https://github.com/kabiroberai/WasmKit.git", branch: "slim"),
+        .package(path: "../swift-project/wasmkit")
+//        .package(url: "https://github.com/kabiroberai/WasmKit.git", branch: "slim"),
     ]),
     targets: [
+        .target(name: "CWacroPluginRaw"),
         .target(
             name: "WacroPluginRaw",
             dependencies: rawMode ? [
                 .product(name: "SwiftCompilerPluginMessageHandling", package: "swift-syntax"),
+                "CWacroPluginRaw",
             ] : []
         ),
         .target(
             name: "WacroPluginHost",
             dependencies: webkitMode ? [] : [
-                "WasmKit",
-                .product(name: "WASI", package: "WasmKit")
+                .product(name: "WasmKit", package: "WasmKit"),
+                .product(name: "WasmKitWASI", package: "WasmKit"),
             ],
             swiftSettings: webkitMode ? [
                 .define("WEBKIT_RUNNER")

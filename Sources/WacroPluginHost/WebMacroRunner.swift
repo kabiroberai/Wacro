@@ -37,9 +37,9 @@ import WebKit
         )
     }
 
-    package convenience init(wasm: Data) async throws {
+    package convenience init(data: Data) async throws {
         try await self.init(AsyncStream {
-            $0.yield(wasm)
+            $0.yield(data)
             $0.finish()
         })
     }
